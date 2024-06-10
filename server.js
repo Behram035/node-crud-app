@@ -2,6 +2,7 @@ import express from "express";
 import User from "./models/user.model.js";
 import dotenv from "dotenv";
 import { Database } from "./db/index.js";
+import bcrypt from 'bcrypt'
 const app = express();
 
 // for JSON Request
@@ -54,8 +55,12 @@ app.post("/api/v1/users", async (req, res) => {
       });
     }
 
+    // Hash password
+    const hashPassword = await bcrypt.hash(password, 12);
+
+
     // create user when already not exist and valid password
-    const user = await User.create(req.body);
+    const user = await User.create({...req.body, password: hashPassword});
     console.log("User Created")
     return res.status(200).json({ message: "User created Successfully", user });
   
